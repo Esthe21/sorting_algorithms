@@ -1,67 +1,46 @@
 #include "sort.h"
-
 /**
- * swap - swaps two contiguous doubly linked nodes
- * @left: left node
- * @right: right node
- * @head: Head of the list
- * Return: void
- */
-listint_t *swap(listint_t *left, listint_t *right, listint_t *head)
-{
-	listint_t *temp;
-
-	if (right->next)
-		right->next->prev = left;
-	if (left->prev)
-		left->prev->next = right;
-
-	right->prev = left->prev;
-	left->next = right->next;
-	right->next = left;
-	left->prev = right;
-
-	temp = left;
-	left = right;
-	right = temp;
-
-	if (left->prev == NULL)
-		return (left);
-	else
-		return (head);
-}
-
-/**
- * insertion_sort_list - run insertion sort over a
- * double linked list
- * @list: pointer to a dlinked list
- * Return: void
+ * insertion_sort_list - function that sorts a doubly linked list
+ * of integers in ascending order using the Insertion sort algorithm
+ * @list: Dobule linked list to sort
  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *left, *right, *ptr;
+	listint_t *node;
 
-	if (list == NULL || *list == NULL)
+	if (list == NULL || (*list)->next == NULL)
 		return;
-
-	if ((*list)->next == NULL)
-		return;
-
-	ptr = (*list)->next;
-	right = ptr;
-	left = ptr->prev;
-
-	while (ptr != NULL)
+	node = (*list)->next;
+	while (node)
 	{
-		while (left != NULL && left->n > right->n)
+		while ((node->prev) && (node->prev->n > node->n))
 		{
-			*list = swap(left, right, *list);
+			node = swap_node(node, list);
 			print_list(*list);
-			left = right->prev;
 		}
-		left = ptr;
-		ptr = ptr->next;
-		right = ptr;
+		node = node->next;
 	}
+}
+/**
+ *swap_node - swap a node for his previous one
+ *@node: node
+ *@list: node list
+ *Return: return a pointer to a node which was enter it
+ */
+listint_t *swap_node(listint_t *node, listint_t **list)
+{
+	listint_t *back = node->prev, *current = node;
+	/*NULL, 19, 48, 9, 71, 13, NULL*/
 
+	back->next = current->next;
+	if (current->next)
+		current->next->prev = back;
+	current->next = back;
+	current->prev = back->prev;
+	back->prev = current;
+	if (current->prev)
+		current->prev->next = current;
+	else
+		*list = current;
+	return (current);
 }

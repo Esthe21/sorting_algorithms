@@ -1,34 +1,60 @@
 #include "sort.h"
+#include <stdio.h>
 /**
-* counting_sort - Implementation of the counting sort algorithm.
-* @array: Array to sort.
-* @size: Size of the array.
-*/
+ *_calloc - this is a calloc function
+ *@nmemb: number of elemets
+ *@size: bit size of each element
+ *Return: pointer to memory assignement
+ */
+void *_calloc(unsigned int nmemb, unsigned int size)
+{
+	unsigned int i = 0;
+	char *p;
+
+	if (nmemb == 0 || size == 0)
+		return ('\0');
+	p = malloc(nmemb * size);
+	if (p == '\0')
+		return ('\0');
+	for (i = 0; i < (nmemb * size); i++)
+		p[i] = '\0';
+	return (p);
+}
+/**
+ * counting_sort - this is a counting sort method implementation
+ * @array: array to sort
+ * @size: array size
+ */
 void counting_sort(int *array, size_t size)
 {
-	unsigned int i, biggest = 0;
-	int *count, *out;
+	int index, maximun = 0, *counter = '\0', *tmp = '\0';
+	size_t i;
 
-	if (size < 2)
+	if (array == '\0' || size < 2)
 		return;
+	/* find maximun number */
 	for (i = 0; i < size; i++)
-		if ((unsigned int)array[i] > biggest)
-			biggest = array[i];
-	count = malloc((biggest + 1) * sizeof(int));
-	if (!count)
-		return;
-	for (i = 0; i <= biggest; i++)
-		count[i] = 0;
+		if (array[i] > maximun)
+			maximun = array[i];
+	counter = _calloc(maximun + 1, sizeof(int));
+	tmp = _calloc(size + 1, sizeof(int));
+	/* count the array elements */
 	for (i = 0; i < size; i++)
-		count[array[i]]++;
-	for (i = 1; i <= biggest; i++)
-		count[i] += count[i - 1];
-	print_array(count, biggest + 1);
-	out = malloc(size * sizeof(int));
+		counter[array[i]]++;
+	/* get the accumulative values */
+	for (index = 1; index <= maximun; index++)
+		counter[index] += counter[index - 1];
+	print_array(counter, maximun + 1);
+	/* get the new array sorted */
+	for (i = 0; i < size; ++i)
+	{
+		tmp[counter[array[i]] - 1] = array[i];
+		counter[array[i]]--;
+	}
+	/* replace old array to new array sorted */
 	for (i = 0; i < size; i++)
-		out[--count[array[i]]] = array[i];
-	for (i = 0; i < size; i++)
-		array[i] = out[i];
-	free(count);
-	free(out);
+		array[i] = tmp[i];
+	free(tmp);
+	free(counter);
+
 }
